@@ -3,10 +3,16 @@
     "target": "es2015",
     "module": "es6",
     "noImplicitAny": true,
+    "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "paths": { 
+      "@/*": ["*"]
+    }
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Recommended"
