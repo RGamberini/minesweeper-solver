@@ -1,3 +1,4 @@
+import { Model } from "../Model/model";
 import {SpaceView} from "./spaceView"
 export class View {
     private model: Model;

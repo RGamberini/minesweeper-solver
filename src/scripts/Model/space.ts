@@ -1,4 +1,4 @@
-class Space {
+export class Space {
     public x: number;
     public y: number;
     public mine: boolean;

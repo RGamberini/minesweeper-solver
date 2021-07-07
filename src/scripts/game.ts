@@ -1,5 +1,7 @@
-import {View} from "./View/view"
-import {SpaceView} from "./View/spaceView"
+import { Model } from "./Model/model";
+import { View } from "./View/view"
+import { SpaceView } from "./View/spaceView"
+import { Space } from "./Model/space";
 export class Game {
     private view: View;
     private model: Model;
@@ -35,6 +37,8 @@ export class Game {
     }
 
     handleRightClick(x: number, y: number) {
+        if (this.firstClick)
+            return;
         let space = this.model.getSpace(x, y);
         if (space.revealed)
             return;

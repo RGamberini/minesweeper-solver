@@ -1,5 +1,6 @@
 import bomb_img from "@/assets/bomb-solid.svg"
 import flag_img from "@/assets/flag.png"
+import { Space } from "../Model/space";
 export class SpaceView {
     private static colors = ["#0200FD", "#017E00", "#FE0001", "#01017E", "#830003", "#008080", "#000000", "#808080"]
     public container: Element;
