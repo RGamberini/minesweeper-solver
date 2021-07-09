@@ -22,6 +22,7 @@ export class Game {
                 space = this.model.getSpace(x, y);
             }
             this.view.update(this.model);
+            (window as any).model = this.model;
             this.firstClick = false;
         }
         if (space.revealed)

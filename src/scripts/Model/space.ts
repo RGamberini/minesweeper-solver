@@ -18,4 +18,11 @@ export class Space {
     public getNumMines(): number {
         return this.numMines;
     }
+
+    public clone() {
+        let space = new Space(this.x, this.y, this.mine, this.numMines);
+        space.revealed = this.revealed;
+        space.flagged = this.flagged;
+        return space;
+    }
 }

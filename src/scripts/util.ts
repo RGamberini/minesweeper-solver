@@ -7,7 +7,7 @@ function mulberry32(a: number)  {
     }
 }
 
-const static_random = mulberry32(2);
+const static_random = mulberry32(4);
 
 function pre_filled_array<T>(size: number, value: T): T[] {
     return Array.from({ length: size }, () => value);

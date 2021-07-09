@@ -16,4 +16,8 @@ export class TestAI {
         this.parent.appendChild(container);
         new View(model, container);
     }
+
+    public clear() {
+        this.parent.innerHTML = ""
+    }
 }

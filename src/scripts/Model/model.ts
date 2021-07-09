@@ -1,4 +1,4 @@
-import {Space} from "./space"
+import { Space } from "./space"
 import { fixed_shuffle, pre_filled_array } from "../util";
 export class Model {
     public size: number;
@@ -7,16 +7,16 @@ export class Model {
     private static directions = [[-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1]]
     private flags: number;
 
-    constructor(size: number, numMines: number, model?: Model) {
+    constructor(size: number, numMines: number, grid?: Space[][]) {
         this.size = size;
         this.numMines = numMines;
         this.flags = 0;
-        if (!model) {
+        if (!grid) {
             this.grid = [];
             this.buildGrid()
+        } else {
+            this.grid = grid;
         }
-        else
-            this.grid = model.grid;
     }
 
     private getMines(mines: boolean[], x: number, y: number): number {
@@ -25,17 +25,17 @@ export class Model {
             return 0;
         return Model.directions
             .map(direction => {
-                return {x: x + direction[0], y: y + direction[1]}
+                return { x: x + direction[0], y: y + direction[1] }
             })
             .filter(neighbor_coord => this.inBounds(neighbor_coord.x, neighbor_coord.y))
             .map(neighbor_cord => mines[(neighbor_cord.x * this.size) + neighbor_cord.y])
-            .reduce((sum, n) => sum + (n ? 1:0), 0)
+            .reduce((sum, n) => sum + (n ? 1 : 0), 0)
     }
 
     private buildGrid() {
         let mines = fixed_shuffle(
             pre_filled_array((this.size * this.size) - this.numMines, false).concat(
-            pre_filled_array(this.numMines, true))
+                pre_filled_array(this.numMines, true))
         );
 
         for (let x = 0; x < this.size; x++) {
@@ -47,7 +47,7 @@ export class Model {
     }
 
     public setFlag(x: number, y: number, flag: boolean) {
-        this.flags += flag ? 1:-1;
+        this.flags += flag ? 1 : -1;
         this.grid[x][y].flagged = flag;
     }
 
@@ -76,6 +76,19 @@ export class Model {
     public getNumFlags(x: number, y: number): number {
         return this.getNeighbors(x, y)
             .map(space => space.flagged)
-            .reduce((sum, n) => sum + (n ? 1:0), 0);
+            .reduce((sum, n) => sum + (n ? 1 : 0), 0);
+    }
+
+    public clone() {
+        let grid: Space[][] = []
+        for (let x = 0; x < this.size; x++) {
+            grid[x] = []
+            for (let y = 0; y < this.size; y++) {
+                grid[x][y] = this.getSpace(x, y).clone()
+            }
+        }
+        let result = new Model(this.size, this.numMines, grid);
+        result.flags = this.flags;
+        return result;
     }
 }
