@@ -72,6 +72,11 @@ export class AI {
         let model = this.game.getModel();
         let {perimeter, unsolved_spaces} = this.getInfo();
 
+        let result = this.solver.solve(model, perimeter, unsolved_spaces);
+
+        result.mines.forEach(space => this.game.handleRightClick(space.x, space.y));
+        result.safe_spaces.forEach(space => this.game.handleLeftClick(space.x, space.y));
+
         perimeter.forEach(space => {
             this.game.getSpaceView(space.x, space.y).mask.classList.remove("blue");
         });

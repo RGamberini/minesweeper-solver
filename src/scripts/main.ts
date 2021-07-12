@@ -7,12 +7,13 @@ import { View } from "./view/view";
 const dificulties = {
     "EASY": [4, 5],
     "BEGGINER": [9, 10],
+    "TEST": [11, 17],
     "INTERMEDIATE": [16, 40]
 }
 function getKeyByValue(object: any, value: any) {
     return Object.keys(object).find(key => object[key] === value);
 }
-let dificulty = dificulties["BEGGINER"];
+let dificulty = dificulties["TEST"];
 console.log(`DEBUG: Starting board on ${getKeyByValue(dificulties, dificulty)} dificulty`)
 const container = (document.querySelector(".container") as HTMLElement);
 const model = new Model(dificulty[0], dificulty[1]);

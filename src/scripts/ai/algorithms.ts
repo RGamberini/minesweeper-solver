@@ -49,3 +49,14 @@ export class BruteForce implements Solver {
         return result;
     }
 }
+
+export class Backtrack implements Solver {
+    public isValid(model: Model, unsolved_spaces: Space[]) {
+        return false;
+    }
+    
+    public solve (model: Model, perimeter: Space[], unsolved_spaces: Space[]) {
+        return new Result();
+    };
+
+}
