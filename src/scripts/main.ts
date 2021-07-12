@@ -1,14 +1,19 @@
-import {Model} from "./Model/model"
-import {View} from "./View/view"
-import {Game} from "./game"
-import {Controller} from "./controller"
-import {AI} from "./ai"
 import "../styles/style.css"
-const EASY = [4, 5];
-const BEGGINER = [9, 10];
-const INTERMEDIATE = [16, 40];
-
-let dificulty = INTERMEDIATE;
+import { AI } from "./ai/ai";
+import { Controller } from "./controller";
+import { Game } from "./game";
+import { Model } from "./model/model";
+import { View } from "./view/view";
+const dificulties = {
+    "EASY": [4, 5],
+    "BEGGINER": [9, 10],
+    "INTERMEDIATE": [16, 40]
+}
+function getKeyByValue(object: any, value: any) {
+    return Object.keys(object).find(key => object[key] === value);
+}
+let dificulty = dificulties["BEGGINER"];
+console.log(`DEBUG: Starting board on ${getKeyByValue(dificulties, dificulty)} dificulty`)
 const container = (document.querySelector(".container") as HTMLElement);
 const model = new Model(dificulty[0], dificulty[1]);
 const view = new View(model, container);

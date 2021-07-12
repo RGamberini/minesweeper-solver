@@ -1,5 +1,6 @@
-import {Game} from "./game"
-import {View} from "./View/view"
+import { Game } from "./game";
+import { View } from "./view/view";
+
 export class Controller {
     private view: View;
     private game: Game;

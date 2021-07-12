@@ -1,12 +1,15 @@
-import { Game } from "./game"
-import { Model } from "./Model/model";
-import { Space } from "./Model/space";
-import { TestAI } from "./test/testAI";
-import { pre_filled_2d_array, pre_filled_array, static_random } from "./util";
+import { Game } from "../game";
+import { Model } from "../model/model";
+import { Space } from "../model/space";
+import { TestAI } from "../test/testAI";
+import { static_random, pre_filled_2d_array } from "../util";
+import { BruteForce, Solver } from "./algorithms";
+
 export class AI {
     private game: Game;
     private testing: boolean = true;
     private testAI?: TestAI;
+    private solver: Solver;
 
     constructor(game: Game) {
         this.game = game
@@ -17,30 +20,16 @@ export class AI {
             this.makeMove()
             this.getInfo()
         });
-        // let info = this.getInfo();
-        // console.log(this.isValid(game.getModel(), info.unsolved_spaces));
-        // this.makeMove()
-        // this.makeMove()
-        // this.getInfo()
+        this.solver = new BruteForce();
     }
 
     makeFistClick() {
         const x = Math.round(static_random() * (this.game.getSize() - 1));
         const y = Math.round(static_random() * (this.game.getSize() - 1));
-        console.log(`Debug: AI clicking (${x}, ${y})`)
+        console.log(`Debug: AI making random first move (${x}, ${y})`)
         // this.game.getSpaceView(x, y).revealed.classList.add("yellow");
 
         this.game.handleLeftClick(x, y);
-    }
-
-    isValid(model: Model, unsolved_spaces: Space[]): boolean {
-        if (model.getFlags() > model.numMines)
-            return false;
-        for (let space of unsolved_spaces) {
-            if (model.getNumFlags(space.x, space.y) !== space.getNumMines())
-                return false;
-        }
-        return true;
     }
 
     getInfo() {
@@ -82,30 +71,6 @@ export class AI {
         // this.testAI?.clear()
         let model = this.game.getModel();
         let {perimeter, unsolved_spaces} = this.getInfo();
-        console.log(`Debug: Start makeMove() processing ${Math.pow(2, perimeter.length)} possible combinations`);
-        let valid_models: Model[] = [];
-        let times_flagged = pre_filled_2d_array(this.game.getSize(), 0);
-
-        for (let i = 0; i < Math.pow(2, perimeter.length); i++) {
-            let test_model = model.clone()
-            for (let j = 0; j < perimeter.length; j++) {
-                test_model.setFlag(perimeter[j].x, perimeter[j].y, !!((i >> j) & 1));
-            }
-            if (this.isValid(test_model, unsolved_spaces)) {
-                valid_models.push(test_model);
-                // this.testAI?.add(test_model);
-                perimeter.forEach(space => times_flagged[space.x][space.y] += test_model.getSpace(space.x, space.y).flagged ? 1 : 0);
-            }
-            // console.log(result.join(", "))
-        }
-        perimeter.forEach(space => {
-            // console.log(`(${space.x}, ${space.y}) flagged ${times_flagged[space.x][space.y]} times out of ${valid_models.length}`)
-            if (times_flagged[space.x][space.y] / valid_models.length === 1) {
-                this.game.handleRightClick(space.x, space.y);
-            } else if (times_flagged[space.x][space.y] / valid_models.length === 0) {
-                this.game.handleLeftClick(space.x, space.y);
-            }
-        });
 
         perimeter.forEach(space => {
             this.game.getSpaceView(space.x, space.y).mask.classList.remove("blue");
@@ -114,7 +79,7 @@ export class AI {
         unsolved_spaces.forEach(space => {
             this.game.getSpaceView(space.x, space.y).revealed.classList.remove("red");
         });
-        console.log("Debug: Start makeMove()")
+        console.log("Debug: End makeMove()")
         // perimeter.forEach(space => this.game.getSpaceView(space.x, space.y).mask.textContent = (times_flagged[space.x][space.y] / valid_models.length * 100).toString())}
     }
 }

@@ -1,5 +1,6 @@
-import { Space } from "./space"
 import { fixed_shuffle, pre_filled_array } from "../util";
+import { Space } from "./space";
+
 export class Model {
     public size: number;
     public numMines: number;

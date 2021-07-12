@@ -1,5 +1,6 @@
-import { Model } from "../Model/model";
-import {SpaceView} from "./spaceView"
+import { Model } from "../model/model";
+import { SpaceView } from "./space_view";
+
 export class View {
     private model: Model;
     private spaces: SpaceView[][];

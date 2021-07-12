@@ -1,7 +1,8 @@
-import { Model } from "./Model/model";
-import { View } from "./View/view"
-import { SpaceView } from "./View/spaceView"
-import { Space } from "./Model/space";
+import { Model } from "./model/model";
+import { Space } from "./model/space";
+import { SpaceView } from "./view/space_view";
+import { View } from "./view/view";
+
 export class Game {
     private view: View;
     private model: Model;
@@ -16,7 +17,6 @@ export class Game {
     public handleLeftClick(x: number, y: number): void {
         let space = this.model.getSpace(x, y);
         if ((space.getNumMines() !== 0 || space.mine) && this.firstClick) {
-            console.log("FIRST CLICK MAKING NEW BOARD");
             while (space.getNumMines() !== 0 || space.mine) {
                 this.model = new Model(this.model.size, this.model.numMines);
                 space = this.model.getSpace(x, y);
