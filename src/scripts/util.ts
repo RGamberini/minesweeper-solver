@@ -35,4 +35,10 @@ function fixed_shuffle(array: any[]): any[] {
     return array;
 }
 
-export {pre_filled_array, pre_filled_2d_array, static_random, fixed_shuffle}
+function replaceAt<T>(array: T[], index: number, value: T) {
+    const ret = array.slice(0);
+    ret[index] = value;
+    return ret;
+  }
+
+export {pre_filled_array, pre_filled_2d_array, static_random, fixed_shuffle, replaceAt}

@@ -3,14 +3,20 @@ import { Model } from "../model/model";
 import { Space } from "../model/space";
 import { TestAI } from "../test/testAI";
 import { static_random, pre_filled_2d_array } from "../util";
-import { BruteForce, Solver } from "./algorithms";
+import { Backtrack, BruteForce, Solver } from "./algorithms";
+import { ComputedSpace } from "./computed_space";
+
+export class AIInfoResult {
+    public perimeter: Space[] = [];
+    public unsolved_spaces: Space[] = [];
+    public computed_spaces: ComputedSpace[] = [];
+}
 
 export class AI {
     private game: Game;
     private testing: boolean = true;
     private testAI?: TestAI;
     private solver: Solver;
-
     constructor(game: Game) {
         this.game = game
         if (this.testing) this.testAI = new TestAI();
@@ -20,7 +26,7 @@ export class AI {
             this.makeMove()
             this.getInfo()
         });
-        this.solver = new BruteForce();
+        this.solver = new Backtrack.Backtrack();
     }
 
     makeFistClick() {
@@ -34,9 +40,7 @@ export class AI {
 
     getInfo() {
         console.log("Debug: Start getInfo()")
-        let passed = pre_filled_2d_array(this.game.getSize(), false);
-        let perimeter: Space[] = [];
-        let unsolved_spaces: Space[] = [];
+        let result = new AIInfoResult();
         for (let x = 0; x < this.game.getSize(); x++) {
             for (let y = 0; y < this.game.getSize(); y++) {
                 let space = this.game.getSpace(x, y);
@@ -44,44 +48,47 @@ export class AI {
                     continue;
 
                 let unsolved = false;
+                let new_space = new ComputedSpace(space);
                 this.game.getNeighbors(space.x, space.y).forEach(neighbor => {
                     if (!neighbor.revealed && !neighbor.flagged) {
-                        if (!passed[neighbor.x][neighbor.y])
-                            perimeter.push(neighbor);
-                        unsolved =true;
+                        let index = result.perimeter.indexOf(neighbor);
+                        if (index === -1) index = result.perimeter.push(neighbor) - 1;
+                        new_space.addIndex(index);
+                        unsolved = true;
                     }
-                    passed[neighbor.x][neighbor.y] = true;
                 });
-                if (unsolved)
-                    unsolved_spaces.push(space)
+                if (unsolved) {
+                    result.computed_spaces.push(new_space);
+                    result.unsolved_spaces.push(space)
+                }
             }
         }
-        perimeter.forEach(space => {
+        result.perimeter.forEach(space => {
             this.game.getSpaceView(space.x, space.y).mask.classList.add("blue");
         });
 
-        unsolved_spaces.forEach(space => {
+        result.unsolved_spaces.forEach(space => {
             this.game.getSpaceView(space.x, space.y).revealed.classList.add("red");
         });
         console.log("Debug: End getInfo()")
-        return {"perimeter": perimeter, "unsolved_spaces": unsolved_spaces};
+        return result;
     }
 
     public makeMove() {
         // this.testAI?.clear()
         let model = this.game.getModel();
-        let {perimeter, unsolved_spaces} = this.getInfo();
+        let info = this.getInfo();
 
-        let result = this.solver.solve(model, perimeter, unsolved_spaces);
+        let result = this.solver.solve(model, info);
 
         result.mines.forEach(space => this.game.handleRightClick(space.x, space.y));
         result.safe_spaces.forEach(space => this.game.handleLeftClick(space.x, space.y));
 
-        perimeter.forEach(space => {
+        info.perimeter.forEach(space => {
             this.game.getSpaceView(space.x, space.y).mask.classList.remove("blue");
         });
 
-        unsolved_spaces.forEach(space => {
+        info.unsolved_spaces.forEach(space => {
             this.game.getSpaceView(space.x, space.y).revealed.classList.remove("red");
         });
         console.log("Debug: End makeMove()")
