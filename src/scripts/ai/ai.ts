@@ -48,17 +48,19 @@ export class AI {
                     continue;
 
                 let unsolved = false;
-                let new_space = new ComputedSpace(space);
+                let computed_space = new ComputedSpace(space);
                 this.game.getNeighbors(space.x, space.y).forEach(neighbor => {
+                    if (neighbor.flagged)
+                        computed_space.max--;
                     if (!neighbor.revealed && !neighbor.flagged) {
                         let index = result.perimeter.indexOf(neighbor);
                         if (index === -1) index = result.perimeter.push(neighbor) - 1;
-                        new_space.addIndex(index);
+                        computed_space.addIndex(index);
                         unsolved = true;
                     }
                 });
                 if (unsolved) {
-                    result.computed_spaces.push(new_space);
+                    result.computed_spaces.push(computed_space);
                     result.unsolved_spaces.push(space)
                 }
             }

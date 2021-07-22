@@ -13,7 +13,7 @@ const dificulties = {
 function getKeyByValue(object: any, value: any) {
     return Object.keys(object).find(key => object[key] === value);
 }
-let dificulty = dificulties["TEST"];
+let dificulty = dificulties["INTERMEDIATE"];
 console.log(`DEBUG: Starting board on ${getKeyByValue(dificulties, dificulty)} dificulty`)
 const container = (document.querySelector(".container") as HTMLElement);
 const model = new Model(dificulty[0], dificulty[1]);

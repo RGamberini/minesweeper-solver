@@ -5,7 +5,7 @@ export class Model {
     public size: number;
     public numMines: number;
     private grid: Space[][];
-    private static directions = [[-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1]]
+    private static directions = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]]
     private flags: number;
 
     constructor(size: number, numMines: number, grid?: Space[][]) {

@@ -1,6 +1,6 @@
 import { Model } from "../model/model";
 import { Space } from "../model/space";
-import { pre_filled_2d_array, replaceAt } from "../util";
+import { pre_filled_2d_array, pre_filled_array, replaceAt } from "../util";
 import { AIInfoResult } from "./ai";
 import { ComputedSpace, ComputedSpaceResult } from "./computed_space";
 export class Result {
@@ -51,18 +51,20 @@ export class BruteForce implements Solver {
 }
 
 export namespace Backtrack {
-    export class Node {
+    class Node {
         private data: number[];
+        private child_index: number;
         
-        constructor (data: number[]) {
+        constructor (data: number[], child_index: number) {
             this.data = data;
+            this.child_index = child_index;
         }
         
         public children(): Node[] {
             let result = [];
-            for (let i = 0; i < this.data.length; i++) {
+            for (let i = this.child_index; i < this.data.length; i++) {
                 if (this.data[i] === 0) {
-                    result.push(new Node(replaceAt(this.data, i, 1)));
+                    result.push(new Node(replaceAt(this.data, i, 1), i + 1));
                     continue;
                 }
             }
@@ -72,35 +74,67 @@ export namespace Backtrack {
         public isValid(spaces: ComputedSpace[]) {
             for (let space of spaces) {
                 let validity = space.isValid(this.data);
-                console.log(`(${space.getX()}, ${space.getY()}) is ${validity}`)
+                // console.log(`(${space.getX()}, ${space.getY()}) is ${validity}`)
                 if (validity !== ComputedSpaceResult.Valid)
                     return validity;
             }
             return ComputedSpaceResult.Valid;
         }
+
+        public getData() {
+            return this.data;
+        }
     }
-    export class Backtrack implements Solver {
-    
+
+    class Tree {
+        public solutions: Node[] = [];
+
         public backtrack(node: Node, spaces: ComputedSpace[]): boolean {
             let isValid = node.isValid(spaces);
             switch (isValid) {
                 case ComputedSpaceResult.Valid:
-                    console.log(node);
+                    this.solutions.push(node);
                     return true;
                 case ComputedSpaceResult.Invalid:
                     return false;
                 case ComputedSpaceResult.Incomplete:
                     for (let child of node.children()) {
-                        if (this.backtrack(child, spaces)) return true;
+                        // if (this.backtrack(child, spaces)) return true;
+                        this.backtrack(child, spaces);
                     }
             }
             return false;
         }
+
+        public crush_solutions() {
+            let solutions = this.solutions.map(solution => solution.getData());
+            let result = pre_filled_array(solutions[0].length, 0)
+            for (let i = 0; i < solutions[0].length; i++) {
+                for (let solution of solutions) result[i] += solution[i]
+            }
+            return result;
+        }
+    }
+    
+    export class Backtrack implements Solver {
         
         public solve (model: Model, info: AIInfoResult) {
+            let result = new Result();
             let data = info.perimeter.map(n => 0);
-            this.backtrack(new Node(data), info.computed_spaces);
-            return new Result();
+            let root = new Node(data, 0);
+            let tree = new Tree();
+
+            tree.backtrack(root, info.computed_spaces);
+            console.log(`${tree.solutions.length} possible solutions`);
+            let solution = tree.crush_solutions();
+
+            for (let i = 0; i < solution.length; i++) {
+                if (solution[i] === tree.solutions.length)
+                    result.mines.push({x: info.perimeter[i].x, y: info.perimeter[i].y})
+                if (solution[i] === 0)
+                    result.safe_spaces.push({x: info.perimeter[i].x, y: info.perimeter[i].y})
+            }
+            return result;
         };
     }
 

@@ -20,6 +20,7 @@ export class View {
                 space.setAttribute("class", "space");
                 space.setAttribute("x", x.toString());
                 space.setAttribute("y", y.toString());
+                space.setAttribute("title", `(${x.toString()}, ${y.toString()})`);
 
                 row.appendChild(space);
 
