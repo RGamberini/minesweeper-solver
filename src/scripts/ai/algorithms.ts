@@ -8,44 +8,43 @@ export class Result {
     public mines: { x: number; y: number; }[] = [];
 }
 export interface Solver {
-    solve: (model: Model, info: AIInfoResult) => Result
+    solve: (info: AIInfoResult) => Result
 }
 
 export class BruteForce implements Solver {
-    public isValid(model: Model, unsolved_spaces: Space[]) {
-        if (model.getFlags() > model.numMines)
-            return false;
-        for (let space of unsolved_spaces) {
-            if (model.getNumFlags(space.x, space.y) !== space.getNumMines())
+    private isValid(computed_spaces: ComputedSpace[], data: number[]) {
+        for (let space of computed_spaces) {
+            if (space.isValid(data) !== ComputedSpaceResult.Valid)
                 return false;
         }
         return true;
     }
-    public solve(model: Model, info: AIInfoResult) {
-        let {perimeter, unsolved_spaces} = info;
+    public solve(info: AIInfoResult) {
+        let {perimeter, computed_spaces} = info;
+        let data = info.perimeter.map(n => 0);
         console.log(`Debug: Start makeMove() processing ${Math.pow(2, perimeter.length)} possible combinations`);
-        let valid_models: Model[] = [];
-        let times_flagged = pre_filled_2d_array(model.size, 0);
+        let times_flagged = info.perimeter.map(n => 0);
+        let num_valid = 0;
 
         for (let i = 0; i < Math.pow(2, perimeter.length); i++) {
-            let test_model = model.clone()
             for (let j = 0; j < perimeter.length; j++) {
-                test_model.setFlag(perimeter[j].x, perimeter[j].y, !!((i >> j) & 1));
+                data[j] = (i >> j) & 1;
             }
-            if (this.isValid(test_model, unsolved_spaces)) {
-                valid_models.push(test_model);
-                perimeter.forEach(space => times_flagged[space.x][space.y] += test_model.getSpace(space.x, space.y).flagged ? 1 : 0);
+            if (this.isValid(computed_spaces, data)) {
+                num_valid++;
+                for (let k = 0; k < perimeter.length; k++) {
+                    if (data[k] === 1) times_flagged[k]++;
+                }
             }
         }
         let result = new Result()
-        perimeter.forEach(space => {
-            // console.log(`(${space.x}, ${space.y}) flagged ${times_flagged[space.x][space.y]} times out of ${valid_models.length}`)
-            if (times_flagged[space.x][space.y] / valid_models.length === 1) {
-                result.mines.push({ x: space.x, y: space.y })
-            } else if (times_flagged[space.x][space.y] / valid_models.length === 0) {
-                result.safe_spaces.push({ x: space.x, y: space.y })
+        for (let i = 0; i < perimeter.length; i++) {
+            if (times_flagged[i] / num_valid === 1) {
+                result.mines.push({ x: perimeter[i].x, y: perimeter[i].y })
+            } else if (times_flagged[i] / num_valid === 0) {
+                result.safe_spaces.push({ x: perimeter[i].x, y: perimeter[i].y })
             }
-        });
+        }
         return result;
     }
 }
@@ -118,7 +117,7 @@ export namespace Backtrack {
     
     export class Backtrack implements Solver {
         
-        public solve (model: Model, info: AIInfoResult) {
+        public solve (info: AIInfoResult) {
             let result = new Result();
             let data = info.perimeter.map(n => 0);
             let root = new Node(data, 0);
