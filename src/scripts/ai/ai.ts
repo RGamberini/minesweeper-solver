@@ -25,8 +25,8 @@ export class AI {
             this.makeMove()
             this.getInfo()
         });
-        // this.solver = new Backtrack.Backtrack();
-        this.solver = new BruteForce();
+        this.solver = new Backtrack.Backtrack();
+        // this.solver = new BruteForce();
     }
 
     makeFirstClick() {
@@ -38,41 +38,58 @@ export class AI {
         this.game.handleLeftClick(x, y);
     }
 
+    buildResult(result: AIInfoResult, space: Space, already_seen: Map<Space, boolean>) {
+        let unsolved = false;
+        let computed_space = new ComputedSpace(space);
+        already_seen.set(space, true);
+
+        for (let neighbor of this.game.getNeighbors(computed_space.getX(), computed_space.getY())) {
+            if (neighbor.flagged) {
+                computed_space.max--;
+                continue;
+            }
+            if (!neighbor.revealed) {
+                let index = result.perimeter.indexOf(neighbor);
+                if (index === -1) index = result.perimeter.push(neighbor) - 1;
+                computed_space.addIndex(index);
+                unsolved = true;
+                this.game.getSpaceView(space.x, space.y);
+                continue;
+            }
+
+            if (neighbor.getNumMines() !== 0 && !already_seen.has(neighbor)) {
+                this.buildResult(result, neighbor, already_seen);
+            }
+        }
+        if (unsolved)
+            result.computed_spaces.push(computed_space);
+    }
+
     getInfo() {
         console.log("Debug: Start getInfo()")
-        let result = new AIInfoResult();
+        let results: AIInfoResult[] = [];
+        let already_seen: Map<Space, boolean> = new Map();
+        
         for (let x = 0; x < this.game.getSize(); x++) {
             for (let y = 0; y < this.game.getSize(); y++) {
                 let space = this.game.getSpace(x, y);
-                if (!space.revealed || space.getNumMines() === 0)
-                    continue;
-
-                let unsolved = false;
-                let computed_space = new ComputedSpace(space);
-                this.game.getNeighbors(space.x, space.y).forEach(neighbor => {
-                    if (neighbor.flagged)
-                        computed_space.max--;
-                    if (!neighbor.revealed && !neighbor.flagged) {
-                        let index = result.perimeter.indexOf(neighbor);
-                        if (index === -1) index = result.perimeter.push(neighbor) - 1;
-                        computed_space.addIndex(index);
-                        unsolved = true;
-                    }
-                });
-                if (unsolved) {
-                    result.computed_spaces.push(computed_space);
+                if (space.revealed && space.getNumMines() > 0 && !already_seen.has(space)) {
+                   let result = new AIInfoResult();
+                   this.buildResult(result, space, already_seen);
+                   results.push(result);
                 }
             }
         }
-        result.perimeter.forEach(space => {
+        results[0].perimeter.forEach(space => {
             this.game.getSpaceView(space.x, space.y).mask.classList.add("blue");
         });
 
-        result.computed_spaces.forEach(space => {
+        results[0].computed_spaces.forEach(space => {
             this.game.getSpaceView(space.getX(), space.getY()).revealed.classList.add("red");
         });
+        console.log(`${results.length} results`);
         console.log("Debug: End getInfo()")
-        return result;
+        return results[0];
     }
 
     public makeMove() {
@@ -80,6 +97,7 @@ export class AI {
         let model = this.game.getModel();
         let info = this.getInfo();
 
+        console.log("Debug: Start makeMove()")
         let result = this.solver.solve(info);
 
         result.mines.forEach(space => this.game.handleRightClick(space.x, space.y));
