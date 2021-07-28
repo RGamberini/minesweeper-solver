@@ -19,6 +19,14 @@ export class Space {
         return this.numMines;
     }
 
+    public getX(): number {
+        return this.x;
+    }
+
+    public getY(): number {
+        return this.y;
+    }
+
     public clone() {
         let space = new Space(this.x, this.y, this.mine, this.numMines);
         space.revealed = this.revealed;
