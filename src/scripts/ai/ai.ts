@@ -2,7 +2,7 @@ import { Game } from "../game";
 import { Model } from "../model/model";
 import { Space } from "../model/space";
 import { TestAI } from "../test/testAI";
-import { static_random, pre_filled_2d_array } from "../util";
+import { static_random } from "../util";
 import { Backtrack, BruteForce, Solver } from "./algorithms";
 import { ComputedSpace } from "./computed_space";
 
@@ -33,8 +33,8 @@ export class AI {
     }
 
     makeFirstClick() {
-        const x = Math.round(static_random() * (this.game.getSize() - 1));
-        const y = Math.round(static_random() * (this.game.getSize() - 1));
+        const x = Math.round(static_random() * (this.game.getWidth() - 1));
+        const y = Math.round(static_random() * (this.game.getHeight() - 1));
         console.log(`Debug: AI making random first move (${x}, ${y})`)
         // this.game.getSpaceView(x, y).revealed.classList.add("yellow");
 
@@ -77,8 +77,8 @@ export class AI {
         let results: AIInfoResult[] = [];
         let already_seen: Map<Space, boolean> = new Map();
         
-        for (let x = 0; x < this.game.getSize(); x++) {
-            for (let y = 0; y < this.game.getSize(); y++) {
+        for (let x = 0; x < this.game.getWidth(); x++) {
+            for (let y = 0; y < this.game.getHeight(); y++) {
                 let space = this.game.getSpace(x, y);
                 if (space.revealed && space.getNumMines() > 0 && !already_seen.has(space)) {
                    let result = new AIInfoResult();

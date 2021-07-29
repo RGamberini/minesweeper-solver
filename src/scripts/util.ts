@@ -13,10 +13,6 @@ function pre_filled_array<T>(size: number, value: T): T[] {
     return Array.from({ length: size }, () => value);
 }
 
-function pre_filled_2d_array<T>(size: number, value: T): T[][] {
-    return Array.from({ length: size }, () => Array.from({ length: size }, () => value));
-}
-
 function fixed_shuffle(array: any[]): any[] {
     var currentIndex = array.length, randomIndex;
 
@@ -41,4 +37,4 @@ function replaceAt<T>(array: T[], index: number, value: T) {
     return ret;
   }
 
-export {pre_filled_array, pre_filled_2d_array, static_random, fixed_shuffle, replaceAt}
+export {pre_filled_array, static_random, fixed_shuffle, replaceAt}

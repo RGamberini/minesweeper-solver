@@ -18,7 +18,7 @@ export class Game {
         let space = this.model.getSpace(x, y);
         if ((space.getNumMines() !== 0 || space.mine) && this.firstClick) {
             while (space.getNumMines() !== 0 || space.mine) {
-                this.model = new Model(this.model.size, this.model.numMines);
+                this.model = new Model(this.model.width, this.model.height, this.model.numMines);
                 space = this.model.getSpace(x, y);
             }
             this.view.update(this.model);
@@ -74,8 +74,12 @@ export class Game {
         return this.model;
     }
 
-    public getSize(): number {
-        return this.model.size;
+    public getWidth() {
+        return this.model.width;
+    }
+
+    public getHeight() {
+        return this.model.height;
     }
 
     public getSpace(x: number, y: number): Space {

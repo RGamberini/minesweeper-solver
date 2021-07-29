@@ -1,6 +1,6 @@
 import { Model } from "../model/model";
 import { Space } from "../model/space";
-import { pre_filled_2d_array, pre_filled_array, replaceAt } from "../util";
+import {pre_filled_array, replaceAt } from "../util";
 import { AIInfoResult } from "./ai";
 import { ComputedSpace, ComputedSpaceResult } from "./computed_space";
 export class Result {

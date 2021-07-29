@@ -10,12 +10,12 @@ export class View {
         this.container = container;
         this.model = model;
         this.spaces = [];
-        for (let x = 0; x < model.size; x++) {
+        for (let x = 0; x < model.width; x++) {
             this.spaces[x] = []
             let row = document.createElement("div");
             row.setAttribute("class", "column");
             this.container!.appendChild(row);
-            for (let y = 0; y < model.size; y++) {
+            for (let y = 0; y < model.height; y++) {
                 let space = document.createElement("div");
                 space.setAttribute("class", "space");
                 space.setAttribute("x", x.toString());
@@ -33,8 +33,8 @@ export class View {
     public update(newModel?: Model) {
         if (newModel)
             this.model = newModel;
-        for (let x = 0; x < this.model.size; x++) {
-            for (let y = 0; y < this.model.size; y++) {
+        for (let x = 0; x < this.model.width; x++) {
+            for (let y = 0; y < this.model.height; y++) {
                 this.spaces[x][y].update(this.model.getSpace(x, y));
             }
         }
@@ -44,17 +44,13 @@ export class View {
         return this.spaces[x][y];
     }
 
-    public getSize(): number {
-        return this.model.size;
-    }
-
     public getNeighbors(x: number, y: number): SpaceView[] {
         return this.model.getNeighbors(x, y).map(space => this.getSpace(space.x, space.y));
     }
 
     public showBombs() {
-        for (let x = 0; x < this.model.size; x++) {
-            for (let y = 0; y < this.model.size; y++) {
+        for (let x = 0; x < this.model.width; x++) {
+            for (let y = 0; y < this.model.height; y++) {
                 if (this.model.getSpace(x, y).mine && !this.model.getSpace(x, y).flagged)
                     this.spaces[x][y].showBomb()
             }
