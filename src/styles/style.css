@@ -10,6 +10,11 @@ html, body {
 body {
     padding-top: 32px;
     display: flex;
+    justify-content: center;
+}
+
+.content {
+    display: flex;
     align-items: center;
     flex-direction: column;
 }

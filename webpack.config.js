@@ -23,6 +23,10 @@ module.exports = {
                 test: /\.(css)$/,
                 use: ['style-loader', 'css-loader'],
             },
+            {
+                test: /\.html$/,
+                use: ['html-loader']
+            }
         ],
     },
     plugins: [
@@ -36,7 +40,7 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js'],
         alias: {
             '@': path.resolve(__dirname, 'src'),
-          }
+        }
     },
     output: {
         filename: 'bundle.js',

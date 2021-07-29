@@ -2,14 +2,17 @@ import { ComputedSpace } from "../ai/computed_space";
 import { Model } from "../model/model";
 import { Space } from "../model/space";
 import { View } from "../view/view";
+import html from "./test.html"
 
 export class TestAI {
     private parent: HTMLElement;
     private main_container: HTMLElement;
+    private body: HTMLElement;
     private colors: Map<string, Element[]>;
     constructor() {
         this.main_container = document.querySelector("#main")!;
-
+        this.body = document.querySelector("body")!;
+        this.body.innerHTML += html;
         this.parent = document.createElement("div");
         this.parent.setAttribute("style", "display: flex")
         document.querySelector("body")?.appendChild(this.parent);

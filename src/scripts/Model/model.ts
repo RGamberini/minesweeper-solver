@@ -23,7 +23,7 @@ export class Model {
     }
 
     private getMines(mines: boolean[], x: number, y: number): number {
-        let index = (x * this.width) + y;
+        let index = (x * this.height) + y;
         if (mines[index])
             return 0;
         return Model.directions
@@ -31,7 +31,7 @@ export class Model {
                 return { x: x + direction[0], y: y + direction[1] }
             })
             .filter(neighbor_coord => this.inBounds(neighbor_coord.x, neighbor_coord.y))
-            .map(neighbor_cord => mines[(neighbor_cord.x * this.width) + neighbor_cord.y])
+            .map(neighbor_cord => mines[(neighbor_cord.x * this.height) + neighbor_cord.y])
             .reduce((sum, n) => sum + (n ? 1 : 0), 0)
     }
 
@@ -44,7 +44,7 @@ export class Model {
         for (let x = 0; x < this.width; x++) {
             this.grid[x] = []
             for (let y = 0; y < this.height; y++) {
-                this.grid[x][y] = new Space(x, y, mines[(x * this.width) + y], this.getMines(mines, x, y))
+                this.grid[x][y] = new Space(x, y, mines[(x * this.height) + y], this.getMines(mines, x, y))
             }
         }
     }
